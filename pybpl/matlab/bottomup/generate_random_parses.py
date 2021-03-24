@@ -24,14 +24,24 @@ eng.addpath(os.path.dirname(__file__), nargout=0)
 
 
 def generate_random_parses(I, seed=None, max_ntrials=150, max_nwalk=150,
-                           max_nstroke=100, nwalk_det=5):
+                           max_nstroke=100, nwalk_det=5, ver="reuben", extra_junctions=None):
     # convert image to matlab format
     I = matlab.logical(I.tolist())
     # if no rng seed provided, generate one randomly
     if seed is None:
         seed = np.random.randint(1,1e6)
     # call matlab fn
-    S_walks = eng.generate_random_parses_RF(I, seed, max_ntrials, max_nwalk, max_nstroke, nwalk_det)
+    if ver=="reuben":
+        S_walks = eng.generate_random_parses_RF(I, seed, max_ntrials, max_nwalk, max_nstroke, nwalk_det)
+    elif ver=="lucas":
+        if extra_junctions is not None:
+            extra_junctions = matlab.int16(extra_junctions.tolist())
+            S_walks, scores = eng.generate_random_parses_LT(I, seed, max_ntrials, max_nwalk, max_nstroke, nwalk_det, extra_junctions, nargout=2)
+        else:
+            S_walks, scores = eng.generate_random_parses_LT(I, seed, max_ntrials, max_nwalk, max_nstroke, nwalk_det, nargout=2)
+    else:
+        print(ver)
+        assert False
 
     # post-process
     for i in range(len(S_walks)):
