@@ -1,11 +1,15 @@
 % Mostly bottom-up method for generating a set
 % See https://github.com/brendenlake/BPL/blob/master/bottomup/generate_random_parses.m
 function [S_walks, score_sorted] = generate_random_parses_LT(I,seed,max_ntrials,max_nwalk,max_nstroke,nwalk_det,extra_junctions)
-    get_substrokes = true;
+    % LT:
+    % extra_junctions, array N x 2, are N points that would like to add as junctions.
+    % get_substrokes, if true, then does substroke search, which implemnets BPL prior knowledge
+    get_substrokes = false;
 
     if ~exist('extra_junctions', 'var')
         extra_junctions = [];
     end
+    
     % apply random seed
     if exist('seed', 'var')
         rng(seed);
@@ -84,7 +88,6 @@ function [S_walks, score_sorted] = generate_random_parses_LT(I,seed,max_ntrials,
         S_walks = PP.get_S;
         % disp(S_walks{8})
         % assert(false)
-        score_sorted = zeros(length(S_walks), 1);
         strokes = cell(length(S_walks), 1);
         for i=1:length(S_walks)
             % Flatten all substrokes into list of strokes
@@ -103,6 +106,7 @@ function [S_walks, score_sorted] = generate_random_parses_LT(I,seed,max_ntrials,
         PP.freeze;
         S_walks = PP.get_S;
     end
+    score_sorted = zeros(length(S_walks), 1);
 
 
     % If want to apply original BPL code to further parse into motor programs...
