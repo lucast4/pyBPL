@@ -123,6 +123,7 @@ class CharacterTokenDist(ConceptTokenDist):
         for pt in prev_parts:
             assert isinstance(pt, PartToken)
         base = rtoken.get_attach_point(prev_parts)
+        print(base.shape)
         assert base.shape == torch.Size([2])
         loc = base + self.loc_dist.sample()
 
@@ -397,7 +398,7 @@ class StrokeTokenDist(PartTokenDist):
         ll = scales_dist.log_prob(invscales_token)
 
         # correction for positive only invscales
-        p_below = scales_dist.cdf(0.)
+        p_below = scales_dist.cdf(torch.tensor(0., dtype=torch.float))
         p_above = 1. - p_below
         ll = ll - torch.log(p_above)
 
@@ -566,7 +567,7 @@ def score_eval_spot_token(eval_spot_token, eval_spot_dist, ncpt):
     else:
         ll = eval_spot_dist.log_prob(eval_spot_token)
         # correction for bounds
-        p_within = eval_spot_dist.cdf(ub) - eval_spot_dist.cdf(lb)
+        p_within = eval_spot_dist.cdf(torch.tensor(ub, dtype=torch.float)) - eval_spot_dist.cdf(torch.tensor(lb, dtype=torch.float))
         ll = ll - torch.log(p_within)
 
     return ll

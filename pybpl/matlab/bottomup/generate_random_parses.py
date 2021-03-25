@@ -13,6 +13,11 @@ eng = matlab.engine.start_matlab()
 try:
     # add BPL code to matlab path
     bpl_path = os.environ['BPL_PATH']
+    try:
+        ls_path = os.environ['LIGHTSPEED_PATH'] # for lighspeed matlab toolbox, used in BPL. see BPL readme.
+        eng.addpath(eng.genpath(ls_path), nargout=0)
+    except:
+        pass
     eng.addpath(eng.genpath(bpl_path), nargout=0)
 except:
     warnings.warn('BPL_PATH environment variable not set... therefore you'
