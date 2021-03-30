@@ -35,6 +35,9 @@ def generate_random_parses(I, seed=None, max_ntrials=150, max_nwalk=150,
     # if no rng seed provided, generate one randomly
     if seed is None:
         seed = np.random.randint(1,1e6)
+    
+    print(eng.which('generate_random_parses_LT'))
+
     # call matlab fn
     if ver=="reuben":
         S_walks = eng.generate_random_parses_RF(I, seed, max_ntrials, max_nwalk, max_nstroke, nwalk_det)
