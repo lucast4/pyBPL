@@ -123,7 +123,6 @@ class CharacterTokenDist(ConceptTokenDist):
         for pt in prev_parts:
             assert isinstance(pt, PartToken)
         base = rtoken.get_attach_point(prev_parts)
-        print(base.shape)
         assert base.shape == torch.Size([2])
         loc = base + self.loc_dist.sample()
 

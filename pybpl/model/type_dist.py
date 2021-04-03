@@ -83,9 +83,9 @@ class ConceptTypeDist(object):
         # for each part, sample part parameters
         for _ in range(k):
             # sample the part type
-            p = self.pdist.sample_part_type(k)
+            p = self.pdist.sample_part_type(k) # samples a stroke (including spatial coords)
             # sample the relation type
-            r = self.rdist.sample_relation_type(P)
+            r = self.rdist.sample_relation_type(P) 
             # append to the lists
             P.append(p)
             R.append(r)
@@ -494,11 +494,11 @@ class StrokeTypeDist(PartTypeDist):
         # sample the number of sub-strokes
         nsub = self.sample_nsub(k)
         # sample the sequence of sub-stroke IDs
-        ids = self.sample_subIDs(nsub)
+        ids = self.sample_subIDs(nsub) # list of ids
         # sample control points for each sub-stroke in the sequence
-        shapes = self.sample_shapes_type(ids)
+        shapes = self.sample_shapes_type(ids) # shape (5, 2, len(ids))
         # sample scales for each sub-stroke in the sequence
-        invscales = self.sample_invscales_type(ids)
+        invscales = self.sample_invscales_type(ids) # shape len(ids)
         # initialize the stroke type
         p = StrokeType(nsub, ids, shapes, invscales)
 
