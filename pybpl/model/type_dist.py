@@ -284,12 +284,16 @@ class StrokeTypeDist(PartTypeDist):
         """
         # nsub should be a scalar
         assert nsub.shape == torch.Size([])
-        # collect pvec for this k
-        pvec = self.pmat_nsub[k-1]
-        # make sure pvec is a vector
-        assert len(pvec.shape) == 1
-        # score using the categorical distribution
-        ll = dist.Categorical(probs=pvec).log_prob(nsub-1)
+
+        if k > len(self.pmat_nsub):
+            ll = torch.tensor(-float('Inf'))
+        else:
+            # collect pvec for this k
+            pvec = self.pmat_nsub[k-1]
+            # make sure pvec is a vector
+            assert len(pvec.shape) == 1
+            # score using the categorical distribution
+            ll = dist.Categorical(probs=pvec).log_prob(nsub-1)
 
         return ll
 
