@@ -71,7 +71,8 @@ class SpatialHist(object):
         logN = torch.log(N)
 
         # Convert to probability distribution
-        logpN = logN - torch.logsumexp(logN, 0)
+        # logpN = logN - torch.logsumexp(logN, 0)
+        logpN = logN - torch.logsumexp(logN.reshape(-1), 0)
         assert aeq(torch.sum(torch.exp(logpN)), torch.tensor(1.))
 
         self.logpYX = logpN

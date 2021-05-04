@@ -95,6 +95,45 @@ class ConceptTypeDist(object):
 
         return ctype
 
+    def score_type_monkey(self, ctype):
+        """ Monkey mods:
+        - does not use substrokes.
+        - returns scores factorized into parts, in a dict
+        """
+
+        assert isinstance(ctype, ConceptType)
+        ll_numparts = 0
+        ll_parts = 0
+        ll_relations = 0
+
+        # score the number of parts
+        # ll = 0.
+        ll_numparts = ll_numparts + self.score_k(ctype.k)
+        # step through and score each part
+        for i in range(ctype.k):
+            ll_parts = ll_parts + self.pdist.score_part_type_monkey(ctype.k, ctype.part_types[i])
+            ll_relations = ll_relations + self.rdist.score_relation_type(
+                ctype.part_types[:i], ctype.relation_types[i]
+            )
+
+        # normalize by num parts
+        # ll_parts = ll_parts/ctype.k
+        # ll_relations = ll_relations/ctype.k
+
+        # ll = weights[0]*ll_numparts + weights[1]*ll_parts + weights[2]*ll_relations
+
+        # print(ll_numparts, ll_parts, ll_relations)
+        # print(ctype.k)
+        # return ll_relations/ctype.k
+        # return ll_numparts
+
+        ll_dict = {
+            "k":ll_numparts,
+            "parts":ll_parts,
+            "rel":ll_relations
+        }
+        return ll_dict
+
     def score_type(self, ctype):
         """
         Compute the log-probability of a concept type under the prior
@@ -136,7 +175,8 @@ class CharacterTypeDist(ConceptTypeDist):
 
     def __init__(self, lib):
         assert isinstance(lib, Library)
-        super(CharacterTypeDist, self).__init__(lib)
+        # super(CharacterTypeDist, self).__init__(lib)
+        super().__init__(lib)
         # override part type dist
         self.pdist = StrokeTypeDist(lib)
         # distribution of 'k' (number of strokes)
@@ -479,6 +519,14 @@ class StrokeTypeDist(PartTypeDist):
         # score points using the gamma distribution
         ll = gamma.log_prob(invscales)
 
+        # mean = self.scales_con[subid]/self.scales_rate[subid]
+        # variance = self.scales_con[subid]/(self.scales_rate[subid]**2)
+        # print("inv scales")
+        # print(self.scales_con[subid], self.scales_rate[subid])
+        # print(mean, variance)
+        # print(invscales)
+        # print(ll)
+
         return ll
 
     def sample_part_type(self, k):
@@ -507,6 +555,20 @@ class StrokeTypeDist(PartTypeDist):
         p = StrokeType(nsub, ids, shapes, invscales)
 
         return p
+
+    def score_part_type_monkey(self, k, ptype):
+        """ same as score_part_type, but ignore subparts
+        """
+        subIDs_scores = self.score_subIDs(ptype.ids)
+        # shapes_scores = self.score_shapes_type(ptype.ids, ptype.shapes)
+        invscales_scores = self.score_invscales_type(ptype.ids, ptype.invscales)
+        # print(subIDs_scores, shapes_scores, invscales_scores)
+        # assert False
+        # ll = torch.sum(subIDs_scores) + torch.sum(shapes_scores) \
+        #      + torch.sum(invscales_scores)
+        ll = torch.sum(subIDs_scores) + torch.sum(invscales_scores)
+
+        return ll
 
     def score_part_type(self, k, ptype):
         """

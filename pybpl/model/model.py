@@ -23,6 +23,9 @@ class CharacterModel(object):
     def score_type(self, ctype):
         return self.type_dist.score_type(ctype)
 
+    def score_type_monkey(self, ctype):
+        return self.type_dist.score_type_monkey(ctype)
+    
     def sample_token(self, ctype):
         return self.token_dist.sample_token(ctype)
 
